@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import random
 
 env = gym.make('Taxi-v3')
-Q = np.zeros([env.observation_space.n, env.action_space.n])
 G = 0
 alpha = 0.618
 amountOfEpisodes = 1000
@@ -21,6 +20,7 @@ def argMaxRandomIndex(array):
     else:
         return random.randint(0, i)
 
+Q = np.zeros([env.observation_space.n, env.action_space.n])
 graphData = np.zeros(amountOfEpisodes, dtype=int)
 print("starting training without shielding")
 for episode in range(0,amountOfEpisodes):
@@ -33,8 +33,6 @@ for episode in range(0,amountOfEpisodes):
             Q[state,action] += alpha * (reward + np.max(Q[state2]) - Q[state,action]) #3
             G += reward
             state = state2
-#    if episode % 50 == 0:
-#        print('Episode {} Total Reward: {}'.format(episode,G))
     graphData[episode] = G
 
 print("training finished without shielding")
@@ -47,10 +45,17 @@ for r in range(4+1):
             if (r,c) not in {(0,0),(0,4),(4,0),(4,3)}:
                 illegalDropoffStates.add(((((r*5)+c)*5+p)*5)+d)
 
+#TODO: add wall states (north, south, east, west apart? want we gaan op de actie moeten checken)
+#TODO: bvb west wall => dan is actie rijd naar westen illegal, enz...
+#illegalNorthWallStates = set()
+#illegalSouthWallStates = set()
+#illegalEastWallStates = set()
+#illegalWestWallStates = set()
+#TODO: kan dit cleaner?
+
 
 
 Q2 = np.zeros([env.observation_space.n, env.action_space.n])
-
 graphData2 = np.zeros(amountOfEpisodes, dtype=int)
 
 print("starting training with shielding")
@@ -68,18 +73,18 @@ for episode in range(0,amountOfEpisodes):
                         print(i)
                         action = i
 
-
                 # Copy row of Q matrix of current state
                 # Make new row with indices that indicate the highest numbers in Q row
                 # Select the index where a "1" is placed in this new index row (for loop met i en return i als value is 1) set action to i
+
+                #TODO: prints worden niet geprint en hierdoor kwamen we op het random actie probleem, maar dit is dus nog ni opgelost?
+                #TODO: de check op onveilige acties moet in een while loop gebeuren, want de 2de beste actie kan ook onveilig zijn
 
 
             state2, reward, done, info = env.step(action) #2
             Q2[state,action] += alpha * (reward + np.max(Q2[state2]) - Q2[state,action]) #3
             G += reward
             state = state2
-#    if episode % 50 == 0:
-#        print('Episode {} Total Reward: {}'.format(episode,G))
     graphData2[episode] = G
 
 print("training finished with shielding")
