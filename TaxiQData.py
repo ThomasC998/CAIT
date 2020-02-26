@@ -11,14 +11,13 @@ amountOfEpisodes = 1000
 
 # Selects the max of an numPy array or a random value (index) if this array contains multiple maxima
 def argMaxRandomIndex(array):
-    sortedA = np.sort(array)[::-1]
-    i=0
-    while i != len(sortedA)-1 and sortedA[i] == sortedA[i+1]:
-        i+=1
-    if i==0:
-        return 0
-    else:
-        return random.randint(0, i)
+    maxIndex = np.argmax(array)
+    maxValue = array[maxIndex]
+    maxSet = set()
+    for i in range(len(array)):
+        if array[i] == maxValue:
+            maxSet.add(i)
+    return random.choice(list(maxSet))
 
 Q = np.zeros([env.observation_space.n, env.action_space.n])
 graphData = np.zeros(amountOfEpisodes, dtype=int)
@@ -28,7 +27,7 @@ for episode in range(0,amountOfEpisodes):
     G, reward = 0, 0
     state = env.reset()
     while done != True:
-            action = np.argmax(Q[state]) #1
+            action = argMaxRandomIndex(Q[state]) #1
             state2, reward, done, info = env.step(action) #2
             Q[state,action] += alpha * (reward + np.max(Q[state2]) - Q[state,action]) #3
             G += reward
@@ -43,7 +42,7 @@ for r in range(4+1):
         p = 4
         for d in range(3+1):
             if (r,c) not in {(0,0),(0,4),(4,0),(4,3)}:
-                illegalDropoffStates.add(((((r*5)+c)*5+p)*5)+d)
+                illegalDropoffStates.add(((((r*5)+c)*5+p)*4)+d)
 
 #TODO: add wall states (north, south, east, west apart? want we gaan op de actie moeten checken)
 #TODO: bvb west wall => dan is actie rijd naar westen illegal, enz...
@@ -64,15 +63,10 @@ for episode in range(0,amountOfEpisodes):
     G, reward = 0, 0
     state = env.reset()
     while done != True:
-            action = np.argmax(Q2[state]) #1
-            if action==5 & state in illegalDropoffStates: # If dropoff, block
-                indexRow = np.argsort(-Q2[state], axis=1)
-                print(indexRow)
-                for i in range(len(indexRow)):
-                    if indexRow[i]==1:
-                        print(i)
-                        action = i
-
+            action = argMaxRandomIndex(Q2[state]) #1
+            if action==5 and state in illegalDropoffStates: # If dropoff, block
+                reducedQArray = Q2[state][:5]
+                action = argMaxRandomIndex(reducedQArray)
                 # Copy row of Q matrix of current state
                 # Make new row with indices that indicate the highest numbers in Q row
                 # Select the index where a "1" is placed in this new index row (for loop met i en return i als value is 1) set action to i

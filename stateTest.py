@@ -18,8 +18,19 @@ def makeCodes(maxR,maxC,maxP,maxD):
             p = 4
             for d in range(maxD+1):
                 if (r,c) not in {(0,0),(0,4),(4,0),(4,3)}:
-                    codeSet.add(((((r*5)+c)*5+p)*5)+d)
+                    # (5) 5, 5, 4
+                    i = r
+                    i *= 5
+                    i += c
+                    i *= 5
+                    i += p
+                    i *= 4
+                    i += d
+                    codeSet.add(i)
+                    #codeSet.add(((((r*5)+c)*5+p)*4)+d)
     return codeSet
 
 print(makeCodes(4,4,4,3))
 print(len(makeCodes(4,4,4,3)))
+
+#print(encode(3,0,4,0))
