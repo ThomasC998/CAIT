@@ -1,0 +1,46 @@
+# Exponential
+from scipy.optimize import curve_fit
+import sympy as sym
+
+plt.plot(t, graphData, '.',label="Original Data")
+plt.plot(t, graphData2, '.',label="Original Data with shielding")
+
+t = np.array(t, dtype=float) #transform your data in a numpy array of floats
+graphData = np.array(graphData, dtype=float) #so the curve_fit can work
+graphData2 = np.array(graphData2, dtype=float) #so the curve_fit can work
+
+
+def func(x, a, b):
+    return a*(math.e**(-b*x))
+
+popt1, pcov1 = curve_fit(func, t, graphData)
+popt2, pcov2 = curve_fit(func, t, graphData2)
+
+
+"""
+The result is:
+popt[0] = a , popt[1] = b, popt[2] = c and popt[3] = d of the function,
+so f(x) = popt[0]*x**3 + popt[1]*x**2 + popt[2]*x + popt[3].
+"""
+print("a = %s , b = %s" % (popt1[0], popt1[1]))
+print("a = %s , b = %s" % (popt2[0], popt2[1]))
+
+"""
+Use sympy to generate the latex sintax of the function
+"""
+xs = sym.Symbol('\lambda')
+tex = sym.latex(func(xs,*popt1)).replace('$', '')
+tex2 = sym.latex(func(xs,*popt2)).replace('$', '')
+plt.title(r'$f(\lambda)= %s$' %(tex),fontsize=16)
+plt.title(r'$f(\lambda)= %s$' %(tex2),fontsize=16)
+
+"""
+Print the coefficients and plot the funcion.
+"""
+
+plt.plot(t, func(t, *popt1), label="Fitted Curve") #same as line above \/
+plt.plot(t, func(t, *popt2), label="Fitted Curve") #same as line above \/
+#plt.plot(x, popt[0]*x**3 + popt[1]*x**2 + popt[2]*x + popt[3], label="Fitted Curve")
+
+plt.legend(loc='lower right')
+#plt.show()
