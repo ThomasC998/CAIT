@@ -1,0 +1,28 @@
+graad = 100
+
+#Plot the non-shield and shield data
+t = np.arange(0, amountOfEpisodes, 1)
+#plt.plot(t, graphData, '.')
+#plt.plot(t, graphData2, '.')
+
+# calculate polynomial 1
+z1 = np.polyfit(t, graphData, graad)
+f1 = np.poly1d(z1)
+
+# calculate new x's and y's
+x_new1 = np.linspace(t[0], t[-1], 50)
+y_new1 = f1(x_new1)
+
+plt.plot(t,graphData,'.', x_new1, y_new1)
+plt.xlim([t[0]-1, t[-1] + 1 ])
+
+# calculate polynomial 2
+z2 = np.polyfit(t, graphData2, graad)
+f2 = np.poly1d(z2)
+
+# calculate new x's and y's
+x_new2 = np.linspace(t[0], t[-1], 50)
+y_new2 = f2(x_new2)
+
+plt.plot(t,graphData2,'.', x_new2, y_new2)
+plt.xlim([t[0]-1, t[-1] + 1 ])

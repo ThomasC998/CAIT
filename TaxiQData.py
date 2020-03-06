@@ -3,11 +3,12 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 import random
+import math
 
 env = gym.make('Taxi-v3')
 G = 0
 alpha = 0.618
-amountOfEpisodes = 1000
+amountOfEpisodes = 400
 
 maxR = 4
 maxC = 4
@@ -174,22 +175,22 @@ for episode in range(0,amountOfEpisodes):
                     flags[5] = False  # can't use this action anymore in the future when getting max Q value
                     action = argMaxRandomIndexShielded(Q[state], flags)
                     illegalDetected = True
-                elif action == 0 and state in illegalSouthWallStates:
-                    flags[0] = False
-                    action = argMaxRandomIndexShielded(Q[state], flags)
-                    illegalDetected = True
-                elif action == 1 and state in illegalNorthWallStates:
-                    flags[1] = False
-                    action = argMaxRandomIndexShielded(Q[state], flags)
-                    illegalDetected = True
-                elif action == 2 and state in illegalEastWallStates:
-                    flags[2] = False
-                    action = argMaxRandomIndexShielded(Q[state], flags)
-                    illegalDetected = True
-                elif action == 3 and state in illegalWestWallStates:
-                    flags[3] = False
-                    action = argMaxRandomIndexShielded(Q[state], flags)
-                    illegalDetected = True
+                #elif action == 0 and state in illegalSouthWallStates:
+                 #   flags[0] = False
+                  #  action = argMaxRandomIndexShielded(Q[state], flags)
+                #    illegalDetected = True
+                #elif action == 1 and state in illegalNorthWallStates:
+                #    flags[1] = False
+                #    action = argMaxRandomIndexShielded(Q[state], flags)
+                #    illegalDetected = True
+                #elif action == 2 and state in illegalEastWallStates:
+                  #  flags[2] = False
+                 #   action = argMaxRandomIndexShielded(Q[state], flags)
+                 #   illegalDetected = True
+                #elif action == 3 and state in illegalWestWallStates:
+                #    flags[3] = False
+                #    action = argMaxRandomIndexShielded(Q[state], flags)
+                #    illegalDetected = True
                 else:
                     illegalDetected = False
                 firstRun = False
@@ -204,10 +205,90 @@ for episode in range(0,amountOfEpisodes):
 print("training finished with shielding")
 
 
+
+# PLOTS
+plotNormal = False
+plotExponential = False
+plotPolynomial = True
+
+
 #Plot the non-shield and shield data
 t = np.arange(0, amountOfEpisodes, 1)
-plt.plot(t, graphData, '.')
-plt.plot(t, graphData2, '.')
+if plotNormal:
+    plt.plot(t, graphData, '-')
+    plt.plot(t, graphData2, '-')
+
+if plotExponential:
+    # Exponential
+    from scipy.optimize import curve_fit
+    import sympy as sym
+
+    plt.plot(t, graphData, '.',label="Original Data")
+    plt.plot(t, graphData2, '.',label="Original Data with shielding")
+
+    t = np.array(t, dtype=float) #transform your data in a numpy array of floats
+    graphData = np.array(graphData, dtype=float) #so the curve_fit can work
+    graphData2 = np.array(graphData2, dtype=float) #so the curve_fit can work
+
+
+    def func(x, a, b):
+        return a*(math.e**(-b*x))
+
+    popt1, pcov1 = curve_fit(func, t, graphData)
+    popt2, pcov2 = curve_fit(func, t, graphData2)
+
+
+    """
+    The result is:
+    popt[0] = a , popt[1] = b, popt[2] = c and popt[3] = d of the function,
+    so f(x) = popt[0]*x**3 + popt[1]*x**2 + popt[2]*x + popt[3].
+    """
+    print("a = %s , b = %s" % (popt1[0], popt1[1]))
+    print("a = %s , b = %s" % (popt2[0], popt2[1]))
+
+    """
+    Use sympy to generate the latex sintax of the function
+    """
+    xs = sym.Symbol('\lambda')
+    tex = sym.latex(func(xs,*popt1)).replace('$', '')
+    tex2 = sym.latex(func(xs,*popt2)).replace('$', '')
+    plt.title(r'$f(\lambda)= %s$' %(tex),fontsize=16)
+    plt.title(r'$f(\lambda)= %s$' %(tex2),fontsize=16)
+
+    """
+    Print the coefficients and plot the funcion.
+    """
+
+    plt.plot(t, func(t, *popt1), label="Fitted Curve") #same as line above \/
+    plt.plot(t, func(t, *popt2), label="Fitted Curve") #same as line above \/
+    #plt.plot(x, popt[0]*x**3 + popt[1]*x**2 + popt[2]*x + popt[3], label="Fitted Curve")
+
+    plt.legend(loc='lower right')
+
+if plotPolynomial:
+    graad = 100
+
+    # calculate polynomial 1
+    z1 = np.polyfit(t, graphData, graad)
+    f1 = np.poly1d(z1)
+
+    # calculate new x's and y's
+    x_new1 = np.linspace(t[0], t[-1], 50)
+    y_new1 = f1(x_new1)
+
+    plt.plot(t, graphData, '.', x_new1, y_new1, label="Fitted Curve without shield")
+    plt.xlim([t[0] - 1, t[-1] + 1])
+
+    # calculate polynomial 2
+    z2 = np.polyfit(t, graphData2, graad)
+    f2 = np.poly1d(z2)
+
+    # calculate new x's and y's
+    x_new2 = np.linspace(t[0], t[-1], 50)
+    y_new2 = f2(x_new2)
+
+    plt.plot(t, graphData2, '.', x_new2, y_new2, label="Fitted Curve with shield")
+    plt.xlim([t[0] - 1, t[-1] + 1])
 
 plt.title('Reward versus episodes with and without shielding')
 plt.show()
