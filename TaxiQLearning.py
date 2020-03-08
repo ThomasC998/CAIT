@@ -7,7 +7,7 @@ Q = np.zeros([env.observation_space.n, env.action_space.n])
 G = 0
 alpha = 0.618
 print("starting training")
-for episode in range(0,1000):
+for episode in range(0,10000):
     done = False
     G, reward = 0, 0
     state = env.reset()

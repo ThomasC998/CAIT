@@ -208,15 +208,15 @@ print("training finished with shielding")
 
 # PLOTS
 plotNormal = False
-plotExponential = False
-plotPolynomial = True
+plotExponential = True
+plotPolynomial = False
 
 
 #Plot the non-shield and shield data
 t = np.arange(0, amountOfEpisodes, 1)
 if plotNormal:
-    plt.plot(t, graphData, '-')
-    plt.plot(t, graphData2, '-')
+    plt.plot(t, graphData, '-', label="Original Data")
+    plt.plot(t, graphData2, '-',label="Original Data with shielding")
 
 if plotExponential:
     # Exponential
@@ -232,17 +232,12 @@ if plotExponential:
 
 
     def func(x, a, b):
-        return a*(math.e**(-b*x))
+        return -a*(math.e**(-b*x))
 
     popt1, pcov1 = curve_fit(func, t, graphData)
     popt2, pcov2 = curve_fit(func, t, graphData2)
 
 
-    """
-    The result is:
-    popt[0] = a , popt[1] = b, popt[2] = c and popt[3] = d of the function,
-    so f(x) = popt[0]*x**3 + popt[1]*x**2 + popt[2]*x + popt[3].
-    """
     print("a = %s , b = %s" % (popt1[0], popt1[1]))
     print("a = %s , b = %s" % (popt2[0], popt2[1]))
 
@@ -259,8 +254,8 @@ if plotExponential:
     Print the coefficients and plot the funcion.
     """
 
-    plt.plot(t, func(t, *popt1), label="Fitted Curve") #same as line above \/
-    plt.plot(t, func(t, *popt2), label="Fitted Curve") #same as line above \/
+    plt.plot(t, func(t, *popt1), label="Fitted Curve                         y=-"+ str(np.around(popt1[0],3)) + "e^(-" + str(np.around(popt1[1],3)) +"x)") #same as line above \/
+    plt.plot(t, func(t, *popt2), label="Fitted Curve with shielding  y=-"+ str(np.around(popt2[0],3)) + "e^(-" + str(np.around(popt2[1],3)) +"x)") #same as line above \/
     #plt.plot(x, popt[0]*x**3 + popt[1]*x**2 + popt[2]*x + popt[3], label="Fitted Curve")
 
     plt.legend(loc='lower right')
@@ -290,7 +285,7 @@ if plotPolynomial:
     plt.plot(t, graphData2, '.', x_new2, y_new2, label="Fitted Curve with shield")
     plt.xlim([t[0] - 1, t[-1] + 1])
 
-plt.title('Reward versus episodes with and without shielding')
+plt.title('Accumulated reward versus episodes with and without shielding')
 plt.show()
 
 
