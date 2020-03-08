@@ -231,15 +231,14 @@ if plotExponential:
     graphData2 = np.array(graphData2, dtype=float) #so the curve_fit can work
 
 
-    def func(x, a, b):
-        return -a*(math.e**(-b*x))
+    def func(x, a, b, c):
+        return -a*(math.e**(-b*x))+c
 
     popt1, pcov1 = curve_fit(func, t, graphData)
     popt2, pcov2 = curve_fit(func, t, graphData2)
 
-
-    print("a = %s , b = %s" % (popt1[0], popt1[1]))
-    print("a = %s , b = %s" % (popt2[0], popt2[1]))
+    print("a = %s , b = %s, c = %s" % (popt1[0], popt1[1], popt1[2]))
+    print("a = %s , b = %s, c = %s" % (popt2[0], popt2[1], popt2[2]))
 
     """
     Use sympy to generate the latex sintax of the function
@@ -254,8 +253,11 @@ if plotExponential:
     Print the coefficients and plot the funcion.
     """
 
-    plt.plot(t, func(t, *popt1), label="Fitted Curve                         y=-"+ str(np.around(popt1[0],3)) + "e^(-" + str(np.around(popt1[1],3)) +"x)") #same as line above \/
-    plt.plot(t, func(t, *popt2), label="Fitted Curve with shielding  y=-"+ str(np.around(popt2[0],3)) + "e^(-" + str(np.around(popt2[1],3)) +"x)") #same as line above \/
+    plt.plot(t, func(t, *popt1),
+             label="Fitted Curve                           y=" + str(np.around(popt1[2], 3)) + "-" + str(
+                 np.around(popt1[0], 3)) + "e^(-" + str(np.around(popt1[1], 3)) + "x)")  # same as line above \/
+    plt.plot(t, func(t, *popt2), label="Fitted Curve with shielding    y=" + str(np.around(popt2[2], 3)) + "-" + str(
+        np.around(popt2[0], 3)) + "e^(-" + str(np.around(popt2[1], 3)) + "x)")  # same as line above \/
     #plt.plot(x, popt[0]*x**3 + popt[1]*x**2 + popt[2]*x + popt[3], label="Fitted Curve")
 
     plt.legend(loc='lower right')
