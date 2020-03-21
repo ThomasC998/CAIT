@@ -8,7 +8,7 @@ import math
 env = gym.make('Taxi-v3')
 G = 0
 alpha = 0.618
-amountOfEpisodes = 400
+amountOfEpisodes = 10000
 amountOfSeries = 10
 
 maxR = 4

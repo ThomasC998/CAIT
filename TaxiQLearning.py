@@ -17,7 +17,7 @@ for episode in range(0,10000):
             Q[state,action] += alpha * (reward + np.max(Q[state2]) - Q[state,action]) #3
             G += reward
             state = state2   
-    if episode % 50 == 0:
+    if episode % 1000 == 0:
         print('Episode {} Total Reward: {}'.format(episode,G))
 
 print("training finished")
@@ -35,4 +35,4 @@ for episode in range(0,30):
         print(state)
         env.render()
     print('Episode {} Total Reward: {}'.format(episode,G))
-    time.sleep(1)
+    time.sleep(2)
