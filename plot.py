@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import qlearning as ql
 
-#Plot the non-shield and shield data
+
 amountEpisodes = 300
-amountSeries = 5
+amountSeries = 50
 alpha = 0.618
 
 
@@ -13,7 +13,7 @@ rewardMatrixShielding = np.zeros((amountSeries, amountEpisodes))
 rewardMatrixRewardShaping = np.zeros((amountSeries, amountEpisodes))
 
 for i in range(0, amountSeries):
-    print('serie {}'.format(i))
+    print('---Serie {} ---'.format(i))
     rewardMatrix[i] = ql.doQLearning(amountOfEpisodes = amountEpisodes)
     rewardMatrixShielding[i] = ql.doQLearning(amountOfEpisodes = amountEpisodes, alpha = alpha, shielding=True)
     rewardMatrixRewardShaping[i] = ql.doQLearning(amountOfEpisodes = amountEpisodes, alpha = alpha, rewardShaping=True)

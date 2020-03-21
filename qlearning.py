@@ -3,6 +3,7 @@ import numpy as np
 import time
 import random
 
+# constants
 nb_rows = 5
 nb_cols = 5
 nb_locs = 4
@@ -34,7 +35,7 @@ def encode(taxi_row, taxi_col, pass_loc, dest_idx):
 
 
 
-
+# calculates all states where a dropoff is unsafe
 illegalDropoffStates = set()
 for row in range(nb_rows):
     for col in range(nb_cols):
@@ -44,11 +45,10 @@ for row in range(nb_rows):
                 state = encode(row, col, passenger, dest)
                 illegalDropoffStates.add(state)
 
-                
+    
 
-
-
-
+# calculates potential function over all states.
+# currently potential is 20 for end state(s), 10 for passenger in taxi, 0 everywhere else
 Potential = np.zeros(500)
 for passenger in range(nb_locs+1):
     for dest in range(nb_locs):
@@ -56,7 +56,7 @@ for passenger in range(nb_locs+1):
             for row in range(nb_rows):
                 for col in range(nb_cols):
                     state = encode(row, col, passenger, dest)
-                    dist = abs(locations[dest][0] - row) + abs(locations[dest][1] - col)
+                    # dist = abs(locations[dest][0] - row) + abs(locations[dest][1] - col)
                     Potential[state] = 10
         elif dest == passenger:   # passenger at destination (and unreachable states)
             for row in range(nb_rows):
@@ -72,6 +72,7 @@ for passenger in range(nb_locs+1):
 
 
 
+# Q learning function. returns the array with accumulated reward for each episode
 def doQLearning(shielding = False, rewardShaping= False, alpha = 0.618, amountOfEpisodes = 500):
 
     env = gym.make('Taxi-v3')

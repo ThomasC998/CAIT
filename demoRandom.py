@@ -1,5 +1,6 @@
 import gym
 import time
+
 env = gym.make('Taxi-v3')
 for i_episode in range(20):
     observation = env.reset()
