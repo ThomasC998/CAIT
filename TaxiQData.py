@@ -124,7 +124,7 @@ plt.plot(doQLearning(), ".")
 plt.plot(doQLearning(shielding=True), ".")
 plt.plot(doQLearning(rewardShaping=True), ".")
 
-plt.title('Reward versus episodes with and without shielding')
+plt.title('Reward versus episodes with/without shielding and reward shaping')
 plt.show()
 
 
