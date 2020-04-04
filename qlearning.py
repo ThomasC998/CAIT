@@ -8,9 +8,7 @@ nb_rows = 5
 nb_cols = 5
 nb_locs = 4
 locations = [(0,0),(0,4),(4,0),(4,3)]
-timestepReward = -1
-illegalReward = -10
-finalReward = 20
+
 
 
 
@@ -52,7 +50,7 @@ for row in range(nb_rows):
 
 # calculates potential function over all states.
 # currently potential is finalReward (20) for end state, finalReward/2 (10) for passenger in taxi, 0 everywhere else
-def calculatePotential():
+def calculatePotential(finalReward):
     Potential = np.zeros(500)
     for passenger in range(nb_locs+1):
         for dest in range(nb_locs):
@@ -73,9 +71,9 @@ def calculatePotential():
 
 
 # Q learning function. returns the array with accumulated reward for each episode
-def doQLearning(shielding = False, rewardShaping= False, alpha = 0.618, amountOfEpisodes = 500):
+def doQLearning(shielding = False, rewardShaping= False, alpha = 0.618, amountOfEpisodes = 500, timestepReward = -1, illegalReward = -10, finalReward = 20):
     if rewardShaping:
-        PotentialF = calculatePotential()
+        PotentialF = calculatePotential(finalReward)
         
     
     env = gym.make('Taxi-v3')
