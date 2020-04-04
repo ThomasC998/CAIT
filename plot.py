@@ -3,33 +3,58 @@ import matplotlib.pyplot as plt
 import qlearning as ql
 
 
-amountEpisodes = 300
-amountSeries = 50
+amountEpisodes = 400
+amountSeries = 5
 alpha = 0.618
 
+regularGraph = False
+shieldingGraph = True
+rewardshapeGraph = True
+combinedGraph = False
+legend = list()
 
-rewardMatrix = np.zeros((amountSeries, amountEpisodes))
-rewardMatrixShielding = np.zeros((amountSeries, amountEpisodes))
-rewardMatrixRewardShaping = np.zeros((amountSeries, amountEpisodes))
+if regularGraph:
+    rewardMatrix = np.zeros((amountSeries, amountEpisodes))
+    for i in range(0, amountSeries):
+        print('---Serie {} ---'.format(i))
+        rewardMatrix[i] = ql.doQLearning(amountOfEpisodes = amountEpisodes)
+    averageGraph1 = rewardMatrix.mean(0)    
+    plt.plot(averageGraph1)
+    legend.append('Regular QLearning')
 
-for i in range(0, amountSeries):
-    print('---Serie {} ---'.format(i))
-    rewardMatrix[i] = ql.doQLearning(amountOfEpisodes = amountEpisodes)
-    rewardMatrixShielding[i] = ql.doQLearning(amountOfEpisodes = amountEpisodes, alpha = alpha, shielding=True)
-    rewardMatrixRewardShaping[i] = ql.doQLearning(amountOfEpisodes = amountEpisodes, alpha = alpha, rewardShaping=True)
+
+if shieldingGraph:
+    rewardMatrixShielding = np.zeros((amountSeries, amountEpisodes))
+    for i in range(0, amountSeries):
+        print('---Serie {} ---'.format(i))
+        rewardMatrixShielding[i] = ql.doQLearning(amountOfEpisodes = amountEpisodes, alpha = alpha, shielding=True)
+    averageGraph2 = rewardMatrixShielding.mean(0)
+    plt.plot(averageGraph2)
+    legend.append('Shielding')
+
+if rewardshapeGraph:
+    rewardMatrixRewardShaping = np.zeros((amountSeries, amountEpisodes))
+    for i in range(0, amountSeries):
+        print('---Serie {} ---'.format(i))
+        rewardMatrixRewardShaping[i] = ql.doQLearning(amountOfEpisodes = amountEpisodes, alpha = alpha, rewardShaping=True)
+    averageGraph3 = rewardMatrixRewardShaping.mean(0)   
+    plt.plot(averageGraph3)
+    legend.append('Reward Shaping')
 
 
-#average out rewardMatrixes
-averageGraph1 = rewardMatrix.mean(0)
-averageGraph2 = rewardMatrixShielding.mean(0)
-averageGraph3 = rewardMatrixRewardShaping.mean(0)
 
-plt.plot(averageGraph1)
-plt.plot(averageGraph2)
-plt.plot(averageGraph3)
+if combinedGraph:
+    rewardMatrixBoth = np.zeros((amountSeries, amountEpisodes))
+    for i in range(0, amountSeries):
+        print('---Serie {} ---'.format(i))
+        rewardMatrixBoth[i] = ql.doQLearning(amountOfEpisodes = amountEpisodes, alpha = alpha, shielding=True, rewardShaping=True)
+    averageGraph4 = rewardMatrixBoth.mean(0) 
+    plt.plot(averageGraph4)
+    legend.append('Shielding + Reward Shaping')
+
 
 plt.xlabel("Episodes")
 plt.ylabel("Accumulated Reward")
-plt.legend(('Regular QLearning', 'Shielding', 'Reward Shaping'))
+plt.legend(legend)
 plt.show()
 

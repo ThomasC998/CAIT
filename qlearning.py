@@ -8,6 +8,9 @@ nb_rows = 5
 nb_cols = 5
 nb_locs = 4
 locations = [(0,0),(0,4),(4,0),(4,3)]
+timestepReward = -1
+illegalReward = -10
+finalReward = 20
 
 
 
@@ -57,12 +60,12 @@ for passenger in range(nb_locs+1):
                 for col in range(nb_cols):
                     state = encode(row, col, passenger, dest)
                     # dist = abs(locations[dest][0] - row) + abs(locations[dest][1] - col)
-                    Potential[state] = 10
+                    Potential[state] = finalReward/2
         elif dest == passenger:   # passenger at destination (and unreachable states)
             for row in range(nb_rows):
                 for col in range(nb_cols):
                     state = encode(row, col, passenger, dest)
-                    Potential[state] = 20
+                    Potential[state] = finalReward
         # else:                     # passenger not picked up yet
         #     for row in range(nb_rows):
         #         for col in range(nb_cols):
@@ -89,6 +92,7 @@ def doQLearning(shielding = False, rewardShaping= False, alpha = 0.618, amountOf
         done = False
         G, reward = 0, 0
         state = env.reset()
+        partial = False
         while done != True:
                 action = argMaxRandomIndex(Q[state]) #1
                 
@@ -98,11 +102,17 @@ def doQLearning(shielding = False, rewardShaping= False, alpha = 0.618, amountOf
                     action = argMaxRandomIndex(reducedQArray)
 
                 state2, reward, done, info = env.step(action) #2
+                if reward == -1:
+                    reward = timestepReward
+                elif reward == 20:
+                    reward = finalReward
+                elif reward == -10:
+                    reward = illegalReward
 
                 # Reward Shaping
                 if rewardShaping:
-                    if reward == 20: reward=0  #remove original reward
-                    reward += Potential[state2] - Potential[state]
+                    if reward == finalReward: reward=0  #remove original final reward
+                    reward += Potential[state2] - Potential[state] # replace with reward shaping
 
                 Q[state,action] += alpha * (reward + np.max(Q[state2]) - Q[state,action]) #3
                 G += reward
