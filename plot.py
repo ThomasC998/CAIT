@@ -3,14 +3,18 @@ import matplotlib.pyplot as plt
 import qlearning as ql
 
 
-amountEpisodes = 400
-amountSeries = 5
+amountEpisodes = 500
+amountSeries = 1
 alpha = 0.618
+ql.finalReward = 20
+ql.timestepReward = -1
+ql.illegalReward = -10
 
-regularGraph = False
+regularGraph = True
 shieldingGraph = True
 rewardshapeGraph = True
 combinedGraph = False
+
 legend = list()
 
 if regularGraph:
@@ -33,6 +37,7 @@ if shieldingGraph:
     legend.append('Shielding')
 
 if rewardshapeGraph:
+    # ql.calculatePotential()
     rewardMatrixRewardShaping = np.zeros((amountSeries, amountEpisodes))
     for i in range(0, amountSeries):
         print('---Serie {} ---'.format(i))
@@ -40,8 +45,6 @@ if rewardshapeGraph:
     averageGraph3 = rewardMatrixRewardShaping.mean(0)   
     plt.plot(averageGraph3)
     legend.append('Reward Shaping')
-
-
 
 if combinedGraph:
     rewardMatrixBoth = np.zeros((amountSeries, amountEpisodes))

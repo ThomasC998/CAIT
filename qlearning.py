@@ -51,33 +51,33 @@ for row in range(nb_rows):
     
 
 # calculates potential function over all states.
-# currently potential is 20 for end state(s), 10 for passenger in taxi, 0 everywhere else
-Potential = np.zeros(500)
-for passenger in range(nb_locs+1):
-    for dest in range(nb_locs):
-        if passenger ==4:         #passenger in taxi
-            for row in range(nb_rows):
-                for col in range(nb_cols):
-                    state = encode(row, col, passenger, dest)
-                    # dist = abs(locations[dest][0] - row) + abs(locations[dest][1] - col)
-                    Potential[state] = finalReward/2
-        elif dest == passenger:   # passenger at destination (and unreachable states)
-            for row in range(nb_rows):
-                for col in range(nb_cols):
-                    state = encode(row, col, passenger, dest)
-                    Potential[state] = finalReward
-        # else:                     # passenger not picked up yet
-        #     for row in range(nb_rows):
-        #         for col in range(nb_cols):
-        #             state = encode(row, col, passenger, dest)
-        #             dist = abs(locations[passenger][0] - row) + abs(locations[passenger][1] - col)
-        #             Potential[state] = 8 - dist      
+# currently potential is finalReward (20) for end state, finalReward/2 (10) for passenger in taxi, 0 everywhere else
+def calculatePotential():
+    Potential = np.zeros(500)
+    for passenger in range(nb_locs+1):
+        for dest in range(nb_locs):
+            if passenger ==4:         #passenger in taxi
+                for row in range(nb_rows):
+                    for col in range(nb_cols):
+                        state = encode(row, col, passenger, dest)
+                        # dist = abs(locations[dest][0] - row) + abs(locations[dest][1] - col)
+                        Potential[state] = finalReward/2
+            elif dest == passenger:   # passenger at destination (and unreachable states)
+                for row in range(nb_rows):
+                    for col in range(nb_cols):
+                        state = encode(row, col, passenger, dest)
+                        Potential[state] = finalReward
+            # else:                     # passenger not picked up yet
+    return Potential 
 
 
 
 # Q learning function. returns the array with accumulated reward for each episode
 def doQLearning(shielding = False, rewardShaping= False, alpha = 0.618, amountOfEpisodes = 500):
-
+    if rewardShaping:
+        PotentialF = calculatePotential()
+        
+    
     env = gym.make('Taxi-v3')
     Q = np.zeros([env.observation_space.n, env.action_space.n])
     graphData = np.zeros(amountOfEpisodes, dtype=int)
@@ -111,8 +111,9 @@ def doQLearning(shielding = False, rewardShaping= False, alpha = 0.618, amountOf
 
                 # Reward Shaping
                 if rewardShaping:
-                    if reward == finalReward: reward=0  #remove original final reward
-                    reward += Potential[state2] - Potential[state] # replace with reward shaping
+                    if reward == finalReward: 
+                        reward=0  #remove original final reward
+                    reward += PotentialF[state2] - PotentialF[state] # replace with reward shaping
 
                 Q[state,action] += alpha * (reward + np.max(Q[state2]) - Q[state,action]) #3
                 G += reward
