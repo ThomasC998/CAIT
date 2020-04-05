@@ -54,17 +54,16 @@ def calculatePotential(finalReward):
     Potential = np.zeros(500)
     for passenger in range(nb_locs+1):
         for dest in range(nb_locs):
-            if passenger ==4:         #passenger in taxi
-                for row in range(nb_rows):
-                    for col in range(nb_cols):
-                        state = encode(row, col, passenger, dest)
-                        # dist = abs(locations[dest][0] - row) + abs(locations[dest][1] - col)
-                        Potential[state] = finalReward/2
-            elif dest == passenger:   # passenger at destination (and unreachable states)
+            if passenger == dest:   # passenger at destination (and unreachable states)
                 for row in range(nb_rows):
                     for col in range(nb_cols):
                         state = encode(row, col, passenger, dest)
                         Potential[state] = finalReward
+            elif passenger == 4:         #passenger in taxi
+                for row in range(nb_rows):
+                    for col in range(nb_cols):
+                        state = encode(row, col, passenger, dest)
+                        Potential[state] = finalReward/2
             # else:                     # passenger not picked up yet
     return Potential 
 
@@ -90,7 +89,6 @@ def doQLearning(shielding = False, rewardShaping= False, alpha = 0.618, amountOf
         done = False
         G, reward = 0, 0
         state = env.reset()
-        partial = False
         while done != True:
                 action = argMaxRandomIndex(Q[state]) #1
                 
