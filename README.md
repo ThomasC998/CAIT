@@ -1,4 +1,4 @@
-# Titel
+# Safe RL and Reward Shaping
 ## Demo
 
 - [demoRandom.py](demoRandom.py) gives a demo with a random agent
